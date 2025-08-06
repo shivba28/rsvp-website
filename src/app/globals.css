@@ -24,3 +24,67 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.card{
+  perspective: 1800px;
+  transition: all 1s;
+}
+
+.card:hover .left-card{
+  transform: rotateY(-25deg);
+}
+
+.left-card{
+  transition: all 1s;
+  transform-style: preserve-3d;
+  transform-origin: 0 0;
+  background-color: #07555F;
+}
+
+.card.open{
+  transform: translateX(50%);
+}
+.card.open .left-card{
+  transform: rotateY(-180deg);
+}
+
+.right-card{
+  box-sizing: border-box;
+  background-color: #0c8292;
+}
+.card-back{
+  box-sizing: border-box;
+  background-color: #07555F;
+}
+
+.head{
+  font-family: "Lavishly Yours", cursive;
+}
+
+p{
+  font-family: "Delius", cursive;
+}
+
+
+/* Background Marquee CSS */
+
+.animate-marquee img {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  margin: 0 5px;
+  border-radius: 0.5rem;
+}
+  
+@keyframes marquee {
+  0% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 60s linear infinite;
+}
