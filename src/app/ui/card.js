@@ -9,7 +9,7 @@ function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(max-width: 768px)');
+    const mediaQuery = window.matchMedia('(max-width: 1220px)');
     setIsMobile(mediaQuery.matches);
     const handler = (e) => setIsMobile(e.matches);
     mediaQuery.addEventListener('change', handler);
@@ -19,7 +19,7 @@ function useIsMobile() {
   return isMobile;
 }
 
-export default function Card({ onRSVPClick }) {
+export default function Card() {
 
   const [Open, setOpen] = useState(false);
   const isMobile = useIsMobile();
@@ -30,9 +30,9 @@ export default function Card({ onRSVPClick }) {
         <div className='left-card w-[100%] h-[100%] relative text-white p-[20%] z-1 shadow-lg cursor-pointer' onClick={() => setOpen(prev => !prev)}>
           <div className='card-front absolute w-[90%] h-[90%] top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 backface-hidden text-center p-10 content-center border-2'>
             <p className="mb-8">You Are Invited to</p>
-            <h1 className='mb-2 head text-4xl md:text-7xl'>Prashant Pawar's</h1>
+            <h1 className='mb-2 head text-4xl xl:text-7xl'>Prashant Pawar's</h1>
             <img alt="front-img" className='w-[60%] mx-auto' src='party2.png'/>
-            <p className='mb-2 text-1xl md:text-3xl'>60th Birthday Party</p>
+            <p className='mb-2 text-1xl xl:text-3xl'>60th Birthday Party</p>
           </div>
           
           <motion.div
@@ -47,15 +47,46 @@ export default function Card({ onRSVPClick }) {
           <div className='border-2 w-[90%] h-[90%] content-center relative mx-auto'>
             <p className="text-xl md:text-3xl mb-4">Join us for the Celebration 🎉</p>
             <a className='hover:underline' href="https://maps.app.goo.gl/7WMr2DRmYith4hc86" target='_blank'><p className="mb-2">📍 Location: Prashu, Plot No. 56, Parvatidevi Society, Kolhapur</p></a>
-            <iframe className='w-[80%] h-[40%] mx-auto my-4 hidden md:block' src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d238.87949688559405!2d74.2772809!3d16.6732826!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sus!4v1754520102157!5m2!1sen!2sus" style={{border:1}} allowFullScreen={false} loading="lazy" referrerPolicy="origin"></iframe>
-            <p className="mb-2">📅 Date: August 28, 2025</p>
-            <p className="mb-4">🕒 Time: 6:00 PM</p>
-            <button className="mt-2 px-4 py-2 border-2 bg-white text-black hover:bg-gray-400 hover:text-black transition cursor-pointer" onClick={onRSVPClick}>
-              RSVP Now
-            </button>
+            <div className="p-8 w-[100%] max-w-md relative mx-auto">
+                <form onSubmit={handleSubmit} className="flex flex-col">
+                  <input type="text" name="name" placeholder="Your Name" className="text-white mb-5 p-2 border-b-2 border-white" required autoComplete="true"/>
+                  <input type="number" name="guests" placeholder="# of Guests" className="text-white mb-2 p-2 border-b-2 border-white" required autoComplete="true"/>
+                  <button type="submit" className="mt-4 px-4 py-2 bg-black text-white rounded cursor-pointer">Submit</button>
+                  
+                </form>
+            </div>
           </div>
         </div>
       </div>
     </div>
   )
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    const form = e.target
+    const data = new URLSearchParams();
+    data.append("name", form.name.value);
+    data.append("guests", form.guests.value);
+
+    try {
+    const response = await fetch('https://script.google.com/macros/s/AKfycbxfZWh7H7QhduR2v18xGo2qBpIDOUPecSuLOct7EmoLFJ3hakW_UPZNHo3huSsYjLstCw/exec', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: data.toString()
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.status}`);
+    }
+
+    alert("Thanks for RSVPing!");
+
+    } catch (err) {
+      console.error("RSVP failed:", err);
+      alert("Something went wrong. Please try again.");
+    }
+    form.reset();
+  }
 }
