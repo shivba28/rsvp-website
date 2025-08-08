@@ -21,7 +21,7 @@ function generateImageList() {
         const ext = path.extname(file).toLowerCase();
         return ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'].includes(ext);
       })
-      .map(file => `/Images/${file}`);
+      .map(file => `/rsvp-website/Images/${file}`);
 
     fs.writeFileSync(outputPath, JSON.stringify(imagePaths, null, 2));
     console.log(`Generated images list with ${imagePaths.length} images`);
