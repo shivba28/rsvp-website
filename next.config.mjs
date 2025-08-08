@@ -5,10 +5,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // If your repo name is not your username.github.io, 
-  // uncomment and update the basePath and assetPrefix:
-  // basePath: '/your-repo-name',
-  // assetPrefix: '/your-repo-name/',
+  basePath: '/rsvp-website',
+  assetPrefix: '/rsvp-website/',
 }
 
 export default nextConfig
