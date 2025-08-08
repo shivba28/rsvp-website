@@ -70,7 +70,6 @@ function DatePicker({ selectedDates = [], onDateChange, availableDates = [] }) {
 }
 
 export default function Card() {
-
   const [Open, setOpen] = useState(false);
   const isMobile = useIsMobile();
 
@@ -86,45 +85,60 @@ export default function Card() {
   ];
 
   const [form, setForm] = useState({
-  name: "",
-  guests: "", // Keep as a string if input type="number"
-  selectedDates: []
+    name: "",
+    guests: "",
+    selectedDates: []
   });
   const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  // Validate that at least one date is selected
-    if (form.selectedDates.length === 0) {
+    e.preventDefault();
+    
+    // Validate that at least one date is selected
+    if (!form.selectedDates || form.selectedDates.length === 0) {
       setMessage("❌ Please select at least one date.");
       return;
     }
 
+    setMessage("Submitting...");
 
-  setMessage("Submitting...");
+    try {
+      // Direct submission to Google Apps Script (bypass Next.js API route for GitHub Pages)
+      const scriptURL = "https://script.google.com/macros/s/AKfycby4lyRxl58jx0B5iDBNVvV64UFdXHLWhOLDvQS-Fzqki3vATGIYUOCJE9xyyj9FIjzn/exec";
+      
+      const formData = new FormData();
+      formData.append("name", form.name);
+      formData.append("guests", form.guests.toString());
+      
+      // Format dates for Google Sheets
+      const formattedDates = form.selectedDates
+        .map(date => new Date(date).toLocaleDateString('en-US', { 
+          weekday: 'short',
+          month: 'short', 
+          day: 'numeric' 
+        }))
+        .join(', ');
+      formData.append("selectedDates", formattedDates);
+      formData.append("datesCount", form.selectedDates.length.toString());
 
-  try {
-    const res = await fetch("/api/rsvp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" }, // Changed from text/plain
-      body: JSON.stringify(form),
-    });
+      const response = await fetch(scriptURL, {
+        method: "POST",
+        body: formData,
+        redirect: "follow",
+        mode: 'cors',
+      });
 
-    const data = await res.json(); // Parse JSON response
-
-    if (res.ok) {
+      if (response.ok) {
         setMessage(`✅ RSVP saved! Thank you, ${form.name}.`);
         setForm({ name: "", guests: "", selectedDates: [] });
       } else {
-        const errorData = await res.json();
-        setMessage(`❌ ${errorData.message || 'Failed to save RSVP'}`);
+        setMessage("❌ Failed to save RSVP. Please try again.");
       }
     } catch (err) {
-      setMessage("❌ Network error.");
+      setMessage("❌ Network error. Please try again.");
       console.error('Submit error:', err);
     }
-};
+  };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-500">
@@ -151,16 +165,41 @@ export default function Card() {
             <a className='hover:underline' href="https://maps.app.goo.gl/7WMr2DRmYith4hc86" target='_blank'><p className="mb-2">📍 Location: Prashu, Plot No. 56, Parvatidevi Society, Kolhapur</p></a>
             <div className="p-8 w-[100%] max-w-md relative mx-auto">
                 <form className="flex flex-col" onSubmit={handleSubmit}>
-                  <input type="text" name="name" placeholder="Your Name" className="text-white mb-5 p-2 border-b-2 border-white" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} autoComplete="true" required/>
-                  <input type="number" name="guests" placeholder="# of Guests" className="text-white mb-2 p-2 border-b-2 border-white" value={form.guests} onChange={(e) => setForm({ ...form, guests: e.target.value })} autoComplete="true" required/>
+                  <input 
+                    type="text" 
+                    name="name" 
+                    placeholder="Your Name" 
+                    className="text-white mb-5 p-2 border-b-2 border-white bg-transparent placeholder-gray-300" 
+                    value={form.name} 
+                    onChange={(e) => setForm({ ...form, name: e.target.value })} 
+                    autoComplete="name" 
+                    required
+                  />
+                  <input 
+                    type="number" 
+                    name="guests" 
+                    placeholder="# of Guests" 
+                    className="text-white mb-4 p-2 border-b-2 border-white bg-transparent placeholder-gray-300" 
+                    value={form.guests} 
+                    onChange={(e) => setForm({ ...form, guests: e.target.value })} 
+                    autoComplete="off" 
+                    required
+                  />
+                  
                   <DatePicker
                     selectedDates={form.selectedDates}
                     onDateChange={(dates) => setForm({ ...form, selectedDates: dates })}
                     availableDates={availableDates}
                   />
-                  <button type="submit" className="mt-4 px-4 py-2 bg-black text-white rounded cursor-pointer">Submit RSVP</button>
+                  
+                  <button 
+                    type="submit" 
+                    className="mt-4 px-4 py-2 bg-black text-white rounded cursor-pointer hover:bg-gray-800 transition-colors"
+                  >
+                    Submit RSVP
+                  </button>
                 </form>
-                <p style={{ color: "white", marginTop: "10px" }}>{message}</p>
+                <p style={{ color: "white", marginTop: "10px", fontSize: "14px" }}>{message}</p>
             </div>
           </div>
         </div>
