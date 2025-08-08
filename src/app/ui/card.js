@@ -19,10 +19,112 @@ function useIsMobile() {
   return isMobile;
 }
 
+// Multi-date picker component
+function DatePicker({ selectedDates = [], onDateChange, availableDates = [] }) {
+  const handleDateToggle = (date) => {
+    // Ensure selectedDates is always an array
+    const currentDates = Array.isArray(selectedDates) ? selectedDates : [];
+    const isSelected = currentDates.includes(date);
+    
+    if (isSelected) {
+      onDateChange(currentDates.filter(d => d !== date));
+    } else {
+      onDateChange([...currentDates, date]);
+    }
+  };
+
+  return (
+    <div className="mb-4">
+      <p className="text-white mb-2 text-sm">Select Available Dates:</p>
+      <div className="flex flex-wrap gap-2">
+        {availableDates.map((date) => {
+          const currentDates = Array.isArray(selectedDates) ? selectedDates : [];
+          const isSelected = currentDates.includes(date);
+          
+          return (
+            <button
+              key={date}
+              type="button"
+              onClick={() => handleDateToggle(date)}
+              className={`px-3 py-1 text-xs rounded border transition-colors ${
+                isSelected
+                  ? 'bg-white text-black border-white'
+                  : 'bg-transparent text-white border-white hover:bg-white hover:text-black'
+              }`}
+            >
+              {new Date(date).toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric' 
+              })}
+            </button>
+          );
+        })}
+      </div>
+      {selectedDates && selectedDates.length > 0 && (
+        <p className="text-xs text-gray-300 mt-1">
+          Selected: {selectedDates.length} date{selectedDates.length > 1 ? 's' : ''}
+        </p>
+      )}
+    </div>
+  );
+}
+
 export default function Card() {
 
   const [Open, setOpen] = useState(false);
   const isMobile = useIsMobile();
+
+  // Define available dates (customize these as needed)
+  const availableDates = [
+    '2024-12-15', // Example dates
+    '2024-12-16',
+    '2024-12-17',
+    '2024-12-22',
+    '2024-12-23',
+    '2024-12-29',
+    '2024-12-30'
+  ];
+
+  const [form, setForm] = useState({
+  name: "",
+  guests: "", // Keep as a string if input type="number"
+  selectedDates: []
+  });
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  // Validate that at least one date is selected
+    if (form.selectedDates.length === 0) {
+      setMessage("❌ Please select at least one date.");
+      return;
+    }
+
+
+  setMessage("Submitting...");
+
+  try {
+    const res = await fetch("/api/rsvp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" }, // Changed from text/plain
+      body: JSON.stringify(form),
+    });
+
+    const data = await res.json(); // Parse JSON response
+
+    if (res.ok) {
+        setMessage(`✅ RSVP saved! Thank you, ${form.name}.`);
+        setForm({ name: "", guests: "", selectedDates: [] });
+      } else {
+        const errorData = await res.json();
+        setMessage(`❌ ${errorData.message || 'Failed to save RSVP'}`);
+      }
+    } catch (err) {
+      setMessage("❌ Network error.");
+      console.error('Submit error:', err);
+    }
+};
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-500">
@@ -48,45 +150,21 @@ export default function Card() {
             <p className="text-xl md:text-3xl mb-4">Join us for the Celebration 🎉</p>
             <a className='hover:underline' href="https://maps.app.goo.gl/7WMr2DRmYith4hc86" target='_blank'><p className="mb-2">📍 Location: Prashu, Plot No. 56, Parvatidevi Society, Kolhapur</p></a>
             <div className="p-8 w-[100%] max-w-md relative mx-auto">
-                <form onSubmit={handleSubmit} className="flex flex-col">
-                  <input type="text" name="name" placeholder="Your Name" className="text-white mb-5 p-2 border-b-2 border-white" required autoComplete="true"/>
-                  <input type="number" name="guests" placeholder="# of Guests" className="text-white mb-2 p-2 border-b-2 border-white" required autoComplete="true"/>
-                  <button type="submit" className="mt-4 px-4 py-2 bg-black text-white rounded cursor-pointer">Submit</button>
-                  
+                <form className="flex flex-col" onSubmit={handleSubmit}>
+                  <input type="text" name="name" placeholder="Your Name" className="text-white mb-5 p-2 border-b-2 border-white" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} autoComplete="true" required/>
+                  <input type="number" name="guests" placeholder="# of Guests" className="text-white mb-2 p-2 border-b-2 border-white" value={form.guests} onChange={(e) => setForm({ ...form, guests: e.target.value })} autoComplete="true" required/>
+                  <DatePicker
+                    selectedDates={form.selectedDates}
+                    onDateChange={(dates) => setForm({ ...form, selectedDates: dates })}
+                    availableDates={availableDates}
+                  />
+                  <button type="submit" className="mt-4 px-4 py-2 bg-black text-white rounded cursor-pointer">Submit RSVP</button>
                 </form>
+                <p style={{ color: "white", marginTop: "10px" }}>{message}</p>
             </div>
           </div>
         </div>
       </div>
     </div>
   )
-
-  async function handleSubmit(e) {
-    e.preventDefault()
-    const form = e.target
-    const data = new URLSearchParams();
-    data.append("name", form.name.value);
-    data.append("guests", form.guests.value);
-
-    try {
-    const response = await fetch('https://script.google.com/macros/s/AKfycbxfZWh7H7QhduR2v18xGo2qBpIDOUPecSuLOct7EmoLFJ3hakW_UPZNHo3huSsYjLstCw/exec', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: data.toString()
-    });
-
-    if (!response.ok) {
-      throw new Error(`Server error: ${response.status}`);
-    }
-
-    alert("Thanks for RSVPing!");
-
-    } catch (err) {
-      console.error("RSVP failed:", err);
-      alert("Something went wrong. Please try again.");
-    }
-    form.reset();
-  }
 }
