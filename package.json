@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "node scripts/generate-images.js && next dev",
+    "build": "node scripts/generate-images.js && next build",
     "start": "next start",
-    "export": "next build",
-    "deploy": "next build && touch out/.nojekyll && git add out/ && git commit -m 'Deploy to GitHub Pages' && git subtree push --prefix out origin gh-pages"
+    "export": "node scripts/generate-images.js && next build",
+    "deploy": "node scripts/generate-images.js && next build && touch out/.nojekyll && git add out/ && git commit -m 'Deploy to GitHub Pages' && git subtree push --prefix out origin gh-pages"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",

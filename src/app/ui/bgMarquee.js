@@ -7,7 +7,7 @@ export default function BgMarquee() {
     const [images, setImages] = useState([]);
 
     useEffect(() => {
-        fetch('/api/images')
+        fetch('/images-list.json')
         .then(res => res.json())
         .then(data => {
             const repeated = Array.from({ length: 100 }, (_, i) => data[i % data.length]);
