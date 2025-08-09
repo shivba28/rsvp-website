@@ -30,8 +30,15 @@ input{
 }
 
 .card{
-  perspective: 2400px;
+  perspective: 1400px;
   transition: all 1s;
+  height: 600px;
+  width: 600px;
+}
+
+.card.mobile{
+  height: 450px;
+  width: 360px;
 }
 
 .card:hover .left-card{
@@ -55,7 +62,6 @@ input{
 }
 
 .right-card{
-  box-sizing: border-box;
   background-color: #0c8292;
 }
 .card-back{
@@ -64,7 +70,7 @@ input{
 }
 
 .card.mobile:hover .left-card{
-  transform: rotateX(25deg);
+  transform: rotateX(0deg);
 }
 
 .card.mobile .left-card {
@@ -77,6 +83,10 @@ input{
 
 .card.mobile.open .left-card {
   transform: rotateX(180deg);
+}
+
+.min-height-class{
+  min-height: 150vh !important;
 }
 
 

@@ -36,7 +36,7 @@ function DatePicker({ selectedDates = [], onDateChange, availableDates = [] }) {
   return (
     <div className="mb-4">
       <p className="text-white mb-2 text-sm">Select Available Dates:</p>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 justify-center">
         {availableDates.map((date) => {
           const currentDates = Array.isArray(selectedDates) ? selectedDates : [];
           const isSelected = currentDates.includes(date);
@@ -141,8 +141,8 @@ export default function Card() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-500">
-      <div className={`card  mx-5 my-auto relative ${Open ? 'open' : ''} ${isMobile ? 'mobile h-[400px] w-[400px]' : 'w-[600px] h-[600px]'}`}>
+    <div className={`flex justify-center items-center min-h-screen transition-all bg-gray-500 ${Open && isMobile ? 'min-height-class':''}`}>
+      <div className={`card  mx-5 my-auto relative ${Open ? 'open' : ''} ${isMobile ? 'mobile' : ''}`}>
         <div className='left-card w-[100%] h-[100%] relative text-white p-[20%] z-1 shadow-lg cursor-pointer' onClick={() => setOpen(prev => !prev)}>
           <div className='card-front absolute w-[90%] h-[90%] top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 backface-hidden text-center p-10 content-center border-2'>
             <p className="mb-8">You Are Invited to</p>
@@ -154,15 +154,17 @@ export default function Card() {
           <motion.div
           style={{  transform: isMobile ? 'rotateX(-180deg)' : 'rotateY(180deg)',
                     transformStyle: 'preserve-3d'}}
-          className='card-back absolute w-[90%] h-[90%] top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 backface-hidden text-center p-20 border-2'>
+          className='card-back absolute w-[90%] h-[90%] top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 backface-hidden text-center p-10 border-2 content-center'>
             {/* optional text goes here */}
             {/* <img alt="back-img" src='party2.png' className='w-100'/> */}
+            <p className="text-xl md:text-3xl mb-4 block xl:hidden">Join us for the Celebration 🎉</p>
+            <a className='hover:underline block xl:hidden' href="https://maps.app.goo.gl/8UuCaXpSKLkKLJrQA" target='_blank'><p className="mb-2">📍 Location: Prashu, Plot No. 56, Parvatidevi Society, Kolhapur</p></a>
           </motion.div>
         </div>
         <div className='right-card w-[100%] h-[100%] text-center shadow-xl text-white absolute top-0 left-0 content-center z-0'>
           <div className='border-2 w-[90%] h-[90%] content-center relative mx-auto'>
-            <p className="text-xl md:text-3xl mb-4">Join us for the Celebration 🎉</p>
-            <a className='hover:underline' href="https://maps.app.goo.gl/7WMr2DRmYith4hc86" target='_blank'><p className="mb-2">📍 Location: Prashu, Plot No. 56, Parvatidevi Society, Kolhapur</p></a>
+            <p className="text-xl md:text-3xl mb-4 hidden xl:block">Join us for the Celebration 🎉</p>
+            <a className='hover:underline hidden xl:block' href="https://maps.app.goo.gl/8UuCaXpSKLkKLJrQA" target='_blank'><p className="mb-2">📍 Location: Prashu, Plot No. 56, Parvatidevi Society, Kolhapur</p></a>
             <div className="p-8 w-[100%] max-w-md relative mx-auto">
                 <form className="flex flex-col" onSubmit={handleSubmit}>
                   <input 

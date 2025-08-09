@@ -23,7 +23,7 @@ export default function BgMarquee() {
     }
 
     return(
-        <div className="fixed top-0 left-0 w-[120%] h-full z-0 overflow-hidden inset-0 animate-marquee opacity-10 bg-white">
+        <div className="fixed top-0 left-0 w-[120%] min-h-screen z-0 overflow-hidden inset-0 animate-marquee opacity-10 bg-white">
             <div className="grid grid-cols-[repeat(auto-fill,minmax(60px,2fr))] gap-[5px] p-1">
                 {images.map((src, index) => {
                 // Random size variation
