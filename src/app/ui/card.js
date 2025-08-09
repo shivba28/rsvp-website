@@ -75,13 +75,13 @@ export default function Card() {
 
   // Define available dates (customize these as needed)
   const availableDates = [
-    '2024-12-15', // Example dates
-    '2024-12-16',
-    '2024-12-17',
-    '2024-12-22',
-    '2024-12-23',
-    '2024-12-29',
-    '2024-12-30'
+    '2024-09-22', // Example dates
+    '2024-09-23',
+    '2024-09-24',
+    '2024-09-25',
+    '2024-09-26',
+    '2024-09-27',
+    '2024-09-28'
   ];
 
   const [form, setForm] = useState({
